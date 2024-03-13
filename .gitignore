@@ -1,9 +1,6 @@
 # my ignore
 config_setting.py
-wsgi.py
-asgi.py
 uploads/
-migrations/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

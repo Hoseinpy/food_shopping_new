@@ -5,8 +5,11 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
 from .models import UserModel
 from .serializers import LoginSerializer
+from django_ratelimit.decorators import ratelimit
+from django.utils.decorators import method_decorator
 
 
+@method_decorator(ratelimit(key='ip', rate='5/m'), name='dispatch')
 class LoginApiView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
