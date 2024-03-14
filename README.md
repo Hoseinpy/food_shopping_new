@@ -15,3 +15,24 @@
 2- بعد محیط مجازی خود را روشن کرده و تمام کتابخانه های فایل req.txt را با کامند pip install -r req.txt نصب کنید
 
 3- بعد فایل config_setting.sample را به config_setting.py تغییر دهید و داخل آن کانفیگ دیتابیس خود را قرار دهید.
+
+
+
+##TODO(food_shopping)
+
+[x] login-api
+[x] singup-api
+[x] logout-api
+[] rest-password-api
+
+[x] food-list-api
+[x] category-list-api
+[x] food-details-api
+[x] category-details-api
+
+[] profile-api
+[] change-password-api
+[] custom-profile-api
+
+[] Carts-api
+[] buy-api
