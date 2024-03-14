@@ -42,8 +42,12 @@ class SingupApiView(APIView):
             return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
 
 
-
+# create logout api and set limit 1 request every minute
+@method_decorator(ratelimit(key='ip', rate='1/m'), name='dispatch')
 class LogoutApiView(APIView):
     def get(self, request):
         logout(request)
         return Response({'status': 'logout successful'}, status.HTTP_200_OK)
+    
+
+
