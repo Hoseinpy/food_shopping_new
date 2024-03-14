@@ -27,7 +27,7 @@ class FoodDetailsApiView(APIView):
     
 
 
-# create food category api and set limit 100 request every hours
+# create food category api and set limit 100 request every minute
 @method_decorator(ratelimit(key='ip', rate='100/m'), name='dispatch')
 class FoodCategoryApiView(APIView):
     def get(self, request):
@@ -37,7 +37,7 @@ class FoodCategoryApiView(APIView):
 
 
 
-# create food category api and set limit 100 request every hours
+# create category detail api and set limit 100 request every minute
 @method_decorator(ratelimit(key='ip', rate='100/m'), name='dispatch')
 class FoodCategoryDetailsApiView(APIView):
     def get(self, request, cat_id):
