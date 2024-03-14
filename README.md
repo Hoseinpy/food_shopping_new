@@ -18,21 +18,33 @@
 
 
 
-##TODO(food_shopping)
+## TODO
 
 [x] login-api
+
 [x] singup-api
+
 [x] logout-api
+
 [] rest-password-api
 
+
 [x] food-list-api
+
 [x] category-list-api
+
 [x] food-details-api
+
 [x] category-details-api
 
+
 [] profile-api
+
 [] change-password-api
+
 [] custom-profile-api
 
+
 [] Carts-api
+
 [] buy-api
