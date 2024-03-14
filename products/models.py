@@ -2,6 +2,7 @@ from django.db import models
 
 # food category
 class FoodCategory(models.Model):
+    image = models.ImageField(upload_to='category', null=True, blank=True)
     title = models.CharField(max_length=100)
     url_title = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
@@ -16,7 +17,7 @@ class FoodCategory(models.Model):
 
 # food model
 class FoodModel(models.Model):
-    category = models.ForeignKey(FoodCategory, on_delete=models.CASCADE)
+    category = models.ForeignKey(FoodCategory, on_delete=models.CASCADE, related_name='category_food')
     image = models.ImageField(upload_to='food', null=True, blank=True)
     name = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=20, decimal_places=2)
