@@ -8,39 +8,49 @@ from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 
 
+
 # create food api and set limit 500 request every minute
 @method_decorator(ratelimit(key='ip', rate='500/m'), name='dispatch')
 class FoodApiView(APIView):
     def get(self, request):
-        food = FoodModel.objects.filter(is_active=True)
-        serializer = FoodSerializer(food, many=True)
-        return Response(serializer.data, status.HTTP_200_OK)
-
+        if request.user.is_authenticated:
+            food = FoodModel.objects.filter(is_active=True)
+            serializer = FoodSerializer(food, many=True)
+            return Response(serializer.data, status.HTTP_200_OK)
+        else:
+            return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)
 
 # create food api and set limit 100 request every minute
 @method_decorator(ratelimit(key='ip', rate='100/m'), name='dispatch')
 class FoodDetailsApiView(APIView):
     def get(self, request, food_id):
-        food = FoodModel.objects.filter(is_active=True, id=food_id).first()
-        serializer = FoodDetailsSerializer(food)
-        return Response(serializer.data, status.HTTP_200_OK)
-    
+        if request.user.is_authenticated:
+            food = FoodModel.objects.filter(is_active=True, id=food_id).first()
+            serializer = FoodDetailsSerializer(food)
+            return Response(serializer.data, status.HTTP_200_OK)
+        else:
+            return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)
 
 
 # create food category api and set limit 100 request every minute
 @method_decorator(ratelimit(key='ip', rate='100/m'), name='dispatch')
 class FoodCategoryApiView(APIView):
     def get(self, request):
-        category = FoodCategory.objects.filter(is_active=True)
-        serializer = FoodCategorySerializer(category, many=True)
-        return Response(serializer.data, status.HTTP_200_OK)
-
+        if request.user.is_authenticated:
+            category = FoodCategory.objects.filter(is_active=True)
+            serializer = FoodCategorySerializer(category, many=True)
+            return Response(serializer.data, status.HTTP_200_OK)
+        else:
+            return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)
 
 
 # create category details api and set limit 100 request every minute
 @method_decorator(ratelimit(key='ip', rate='100/m'), name='dispatch')
 class FoodCategoryDetailsApiView(APIView):
     def get(self, request, cat_id):
-        category = FoodCategory.objects.filter(is_active=True, id=cat_id).first()
-        serializer = FoodCategoryDetailsSerializer(category)
-        return Response(serializer.data, status.HTTP_200_OK)
+        if request.user.is_authenticated:
+            category = FoodCategory.objects.filter(is_active=True, id=cat_id).first()
+            serializer = FoodCategoryDetailsSerializer(category)
+            return Response(serializer.data, status.HTTP_200_OK)
+        else:
+            return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)   
