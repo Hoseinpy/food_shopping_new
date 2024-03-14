@@ -8,6 +8,7 @@
 
 3- move config_setting.sample to config_setting.py and set up your db config
 
+
 ## برای شروع(Persian)
 1- اول از همه یک محیط مجازی وینو درست کنید با کامند python -m venv venv
 
