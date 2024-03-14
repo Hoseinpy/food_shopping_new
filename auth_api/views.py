@@ -40,3 +40,10 @@ class SingupApiView(APIView):
             return Response({'status': 'singup successful'}, status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+
+
+
+class LogoutApiView(APIView):
+    def get(self, request):
+        logout(request)
+        return Response({'status': 'logout successful'}, status.HTTP_200_OK)
