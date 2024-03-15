@@ -1,6 +1,7 @@
 # my ignore
 config_setting.py
 uploads/
+.idea
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

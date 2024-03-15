@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
 from .models import UserModel
-from .serializers import LoginSerializer, SingupSerializer, ProfileSerializer
+from .serializers import LoginSerializer, SingupSerializer, ProfileSerializer, ChangePasswordSerializer
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 from rest_framework.authtoken.models import Token
@@ -45,7 +45,6 @@ class SingupApiView(APIView):
             return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
         
 
-
 # create logout api and set limit 1 request every minute
 @method_decorator(ratelimit(key='ip', rate='2/m'), name='dispatch')
 class LogoutApiView(APIView):
@@ -54,14 +53,29 @@ class LogoutApiView(APIView):
         return Response({'status': 'logout successful'}, status.HTTP_200_OK)
     
 
-
 # create profile api and set limit 20 request every minute
 @method_decorator(ratelimit(key='ip', rate='20/m'), name='dispatch')
 class ProfileApiView(APIView):
-    def get(self, request, code):
+    def get(self, request):
         if request.user.is_authenticated:
-            user = get_object_or_404(UserModel, code=code)
-            serializer = ProfileSerializer(user)
+            current_user = UserModel.objects.filter(id=request.user.id).first()
+            serializer = ProfileSerializer(current_user)
             return Response(serializer.data, status.HTTP_200_OK)
         else:
-            return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)
+            return Response({'status': 'you are not login'}, status.HTTP_401_UNAUTHORIZED)
+
+
+class ChangePassword(APIView):
+    def post(self, request):
+        pass
+        # serializer = ChangePasswordSerializer(data=request.data)
+        # if serializer.is_valid():
+        #     user: UserModel = get_object_or_404(UserModel, code=code)
+        #     if user.check_password(serializer.data.get('current_password')):
+        #         user.set_password(serializer.data.get('password'))
+        #         user.save()
+                  #return Response({'status': 'successful'}, status.HTTP_200_OK)
+        #     else:
+        #         return Response({'status': 'incorrect current password'}, status.HTTP_404_NOT_FOUND)
+        # else:
+        #     return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)

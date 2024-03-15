@@ -8,7 +8,6 @@ from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 
 
-
 # create food api and set limit 500 request every minute
 @method_decorator(ratelimit(key='ip', rate='500/m'), name='dispatch')
 class FoodApiView(APIView):
@@ -19,6 +18,7 @@ class FoodApiView(APIView):
             return Response(serializer.data, status.HTTP_200_OK)
         else:
             return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)
+
 
 # create food api and set limit 100 request every minute
 @method_decorator(ratelimit(key='ip', rate='100/m'), name='dispatch')
