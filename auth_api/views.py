@@ -1,12 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
 from .models import UserModel
-from .serializers import LoginSerializer, SingupSerializer
+from .serializers import LoginSerializer, SingupSerializer, ProfileSerializer
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
+from rest_framework.authtoken.models import Token
+from django.utils.crypto import get_random_string
 
 
 # create login api and set limit 10 request every minute.
@@ -19,6 +21,7 @@ class LoginApiView(APIView):
             if user is not None:
                 current_user = user
                 login(request, current_user)
+                UserModel.objects.filter(id=user.id).update(code=get_random_string(72))
                 return Response({'status': 'login successful'}, status.HTTP_200_OK)
             else:
                 return Response({'status': 'incurrect username or password'}, status.HTTP_404_NOT_FOUND)
@@ -34,16 +37,17 @@ class SingupApiView(APIView):
         if serializer.is_valid():
             # get username value and save in database
             username = serializer.data.get('username')
-            user = UserModel.objects.create(username=username)
+            user = UserModel.objects.create(username=username, code=get_random_string(72))
             user.set_password(serializer.data.get('password'))
             user.save()
             return Response({'status': 'singup successful'}, status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+        
 
 
 # create logout api and set limit 1 request every minute
-@method_decorator(ratelimit(key='ip', rate='1/m'), name='dispatch')
+@method_decorator(ratelimit(key='ip', rate='2/m'), name='dispatch')
 class LogoutApiView(APIView):
     def get(self, request):
         logout(request)
@@ -51,3 +55,13 @@ class LogoutApiView(APIView):
     
 
 
+# create profile api and set limit 20 request every minute
+@method_decorator(ratelimit(key='ip', rate='20/m'), name='dispatch')
+class ProfileApiView(APIView):
+    def get(self, request, code):
+        if request.user.is_authenticated:
+            user = get_object_or_404(UserModel, code=code)
+            serializer = ProfileSerializer(user)
+            return Response(serializer.data, status.HTTP_200_OK)
+        else:
+            return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)

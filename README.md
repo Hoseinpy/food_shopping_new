@@ -8,6 +8,7 @@
 
 3- move config_setting.sample to config_setting.py and set up your db config
 
+-----------------------------------------------------------------------------------------------------------
 
 ## برای شروع(Persian)
 1- اول از همه یک محیط مجازی وینو درست کنید با کامند python -m venv venv
@@ -16,7 +17,7 @@
 
 3- بعد فایل config_setting.sample را به config_setting.py تغییر دهید و داخل آن کانفیگ دیتابیس خود را قرار دهید.
 
-
+-----------------------------------------------------------------------------------------------------------
 
 ## TODO
 
@@ -26,7 +27,7 @@
 
 [x] logout-api
 
-[] rest-password-api
+[ ] rest-password-api
 
 
 [x] food-list-api
@@ -38,13 +39,13 @@
 [x] category-details-api
 
 
-[] profile-api
+[x] profile-api
 
-[] change-password-api
+[ ] change-password-api
 
-[] custom-profile-api
+[ ] custom-profile-api
 
 
-[] Carts-api
+[ ] Carts-api
 
-[] buy-api
+[ ] buy-api
