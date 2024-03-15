@@ -41,7 +41,7 @@
 
 [x] profile-api
 
-[ ] change-password-api
+[x] change-password-api
 
 [ ] custom-profile-api
 
