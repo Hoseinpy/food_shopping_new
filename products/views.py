@@ -8,7 +8,7 @@ from .serializers import FoodSerializer, FoodCategorySerializer, FoodDetailsSeri
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import generics
+from utils.total_price import total_price
 
 
 # this api show all food in database.
@@ -60,18 +60,53 @@ class FoodCategoryDetailsApiView(APIView):
 
 
 # this api show all user cart
-class CartListApiView(generics.ListAPIView):
+class CartListApiView(APIView):
     authentication_classes = [TokenAuthentication]
-    queryset = CartModel.objects.all().order_by('-created_at')
-    serializer_class = CartSerializer
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            cart = CartModel.objects.filter(user=request.user).order_by('-created_at')
+            serializer = CartSerializer(cart, many=True)
+            return Response(serializer.data, status.HTTP_200_OK)
+        else:
+            return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)
 
 
 # this api show detail and can delete and update cart
 @method_decorator([ratelimit(key='ip', rate='20/m'), csrf_exempt], name='dispatch')
-class CartDetailsApiView(generics.RetrieveUpdateDestroyAPIView):
+class CartDetailsApiView(APIView):
     authentication_classes = [TokenAuthentication]
-    queryset = CartModel.objects.all()
-    serializer_class = CartSerializer
+
+    def get(self, request, cart_id):
+        if request.user.is_authenticated:
+            cart = CartModel.objects.filter(id=cart_id).first()
+            if cart:
+                serializer = CartSerializer(cart)
+                # todo: add fianll price
+                return Response(serializer.data, status.HTTP_200_OK)
+            else:
+                return Response({'status': 'not found'}, status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)
+
+    def put(self, request, cart_id):
+        if request.user.is_authenticated:
+            cart = get_object_or_404(CartModel, id=cart_id)
+            serializer = CartSerializer(instance=cart, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'status': 'cart is successfully update'}, status.HTTP_200_OK)
+        else:
+            return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)
+
+    def delete(self, request, cart_id):
+        if request.user.is_authenticated:
+            cart = get_object_or_404(CartModel, id=cart_id)
+            if cart.user == request.user:
+                cart.delete()
+                return Response({'status': 'cart is successfully deleted'}, status.HTTP_200_OK)
+        else:
+            return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)
 
 
 # this api for add food to cart
@@ -82,17 +117,19 @@ class CartAddApiView(APIView):
     def post(self, request, food_id):
         if request.user.is_authenticated:
             food = get_object_or_404(FoodModel, id=food_id)
-            print(food)
             cart = CartModel.objects.filter(user=request.user, food=food).first()
-            print(cart)
 
             if cart:
-                cart.quantity += 1
-                cart.save()
-                return Response({'status': 'quantity is added'}, status.HTTP_200_OK)
+                return Response({'status': 'food is already added your cart'}, status.HTTP_302_FOUND)
 
             else:
-                create_cart = CartModel.objects.create(user=request.user, food=food, quantity=request.data.get('quantity'))
+                quantity = request.data.get('quantity')
+                if quantity is None:
+                    quantity = 1
+                else:
+                    quantity = request.data.get('quantity')
+
+                create_cart = CartModel.objects.create(user=request.user, food=food, quantity=quantity)
                 create_cart.save()
                 return Response({'status': 'cart succecful created'}, status.HTTP_201_CREATED)
         else:

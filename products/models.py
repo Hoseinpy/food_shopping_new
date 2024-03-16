@@ -23,7 +23,7 @@ class FoodModel(models.Model):
     category = models.ForeignKey(FoodCategory, on_delete=models.CASCADE, related_name='category_food')
     image = models.ImageField(upload_to='food', null=True, blank=True)
     name = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=20, decimal_places=2)
+    price = models.DecimalField(max_digits=20, decimal_places=0)
     short_description = models.TextField(max_length=200)
     description = models.TextField(max_length=500)
     rating = models.CharField(max_length=5)
@@ -34,12 +34,13 @@ class FoodModel(models.Model):
         verbose_name = 'food'
         verbose_name_plural = 'foods'
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
 
 class CartModel(models.Model):
     user = models.ForeignKey(UserModel, on_delete=models.CASCADE)
-    food = models.ForeignKey(FoodModel, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
+    food = models.ForeignKey(FoodModel, on_delete=models.CASCADE, related_name='food')
+    quantity = models.PositiveIntegerField(default=1, blank=True)
+    finall_price = models.DecimalField(max_digits=20, decimal_places=0, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

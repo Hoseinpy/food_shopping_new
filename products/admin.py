@@ -16,4 +16,4 @@ class FoodCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(CartModel)
 class FoodCategoryAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'food', 'quantity', 'created_at']
+    list_display = ['id', 'user', 'food', 'quantity', 'finall_price', 'created_at']

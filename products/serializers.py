@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import FoodModel, FoodCategory, CartModel
 
-
 class FoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = FoodModel
@@ -28,8 +27,14 @@ class FoodCategoryDetailsSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
-    quantity = serializers.IntegerField()
+    quantity = serializers.IntegerField(default=1)
+    food = serializers.SerializerMethodField()
 
     class Meta:
         model = CartModel
-        fields = '__all__'
+        fields = ['id', 'food', 'quantity', 'finall_price', 'created_at']
+
+    def get_food(self, obj):
+        return str(obj.food)
+
+
