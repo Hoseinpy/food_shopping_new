@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FoodCategory, FoodModel
+from .models import FoodCategory, FoodModel, CartModel
 
 @admin.register(FoodModel)
 class FoodAdmin(admin.ModelAdmin):
@@ -12,3 +12,8 @@ class FoodAdmin(admin.ModelAdmin):
 class FoodCategoryAdmin(admin.ModelAdmin):
     list_display = ['id', 'title', 'url_title']
     list_filter = ['title']
+
+
+@admin.register(CartModel)
+class FoodCategoryAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'food', 'quantity', 'created_at']

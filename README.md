@@ -43,10 +43,10 @@
 
 [x] change-password-api
 
-[ ] custom-profile-api
+[x] custom-profile-api
 
 
 
-[ ] Carts-api
+[x] Carts-api
 
 [ ] buy-api
