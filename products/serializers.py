@@ -28,7 +28,7 @@ class FoodCategoryDetailsSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
-    quantity = serializers.SerializerMethodField()
+    quantity = serializers.IntegerField()
 
     class Meta:
         model = CartModel
