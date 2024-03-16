@@ -40,3 +40,15 @@ class ChangePasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError({'error': 'the password is not match'})
 
         return attrs
+
+
+class CustomProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserModel
+        fields = ['avatar', 'username', 'first_name', 'last_name', 'bio']
+
+    def validate(self, attrs):
+        if UserModel.objects.filter(username=attrs['username']).exists():
+            raise serializers.ValidationError({'error': 'the username is already take'})
+
+        return attrs

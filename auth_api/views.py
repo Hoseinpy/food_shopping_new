@@ -4,9 +4,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
 from .models import UserModel
-from .serializers import LoginSerializer, SingupSerializer, ProfileSerializer, ChangePasswordSerializer
+from .serializers import LoginSerializer, SingupSerializer, ProfileSerializer, ChangePasswordSerializer, CustomProfileSerializer
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
+from rest_framework.authentication import TokenAuthentication
 
 
 # create login api and set limit 10 request every minute.
@@ -80,3 +81,20 @@ class ChangePassword(APIView):
                 return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'status': 'you are not login'}, status.HTTP_401_UNAUTHORIZED)
+
+
+# create custom profile api and set limit 10 request every minute
+@method_decorator(ratelimit(key='ip', rate='10/m'), name='dispatch')
+class CustomProfileApiView(APIView): # todo: test full this api
+    def put(self, request):
+        if request.user.is_authenticated:
+            user = UserModel.objects.filter(id=request.user.id).first()
+            serializer = CustomProfileSerializer(instance=user, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'status': 'successful'}, status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'status': 'you are not login'}, status.HTTP_401_UNAUTHORIZED)
+
