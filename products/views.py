@@ -99,6 +99,7 @@ class CartDetailsApiView(APIView, mixins.UpdateModelMixin, mixins.DestroyModelMi
                     p = quantity * cart.food.price
                     cart.finall_price = p
                 serializer.save()
+
                 return Response({'status': 'cart is successfully update'}, status.HTTP_200_OK)
         else:
             return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)
