@@ -85,7 +85,7 @@ class ChangePassword(APIView):
 
 # create custom profile api and set limit 10 request every minute
 @method_decorator(ratelimit(key='ip', rate='10/m'), name='dispatch')
-class CustomProfileApiView(APIView):  # todo: test full this api
+class CustomProfileApiView(APIView):  # TODO: test full this api
     def put(self, request):
         if request.user.is_authenticated:
             user = UserModel.objects.filter(id=request.user.id).first()

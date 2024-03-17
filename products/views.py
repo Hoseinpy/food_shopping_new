@@ -9,7 +9,6 @@ from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from utils.total_price import total_price
-from rest_framework import mixins
 
 
 # this api show all food in database.
@@ -75,7 +74,7 @@ class CartListApiView(APIView):
 
 # this api show detail and can delete and update cart
 @method_decorator([ratelimit(key='ip', rate='20/m'), csrf_exempt], name='dispatch')
-class CartDetailsApiView(APIView, mixins.UpdateModelMixin, mixins.DestroyModelMixin):
+class CartDetailsApiView(APIView):
     authentication_classes = [TokenAuthentication]
 
     def get(self, request, cart_id):

@@ -46,7 +46,9 @@
 [x] custom-profile-api
 
 
-
 [x] Carts-api
 
 [ ] buy-api
+
+
+[ ] fix cart update bug
