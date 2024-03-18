@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework import status
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import FoodModel, FoodCategory, CartModel
@@ -61,7 +60,6 @@ class FoodCategoryDetailsApiView(APIView):
 
 # this api show all user cart
 class CartListApiView(APIView):
-    authentication_classes = [TokenAuthentication]
 
     def get(self, request):
         if request.user.is_authenticated:
@@ -75,7 +73,6 @@ class CartListApiView(APIView):
 # this api show detail and can delete and update cart
 @method_decorator([ratelimit(key='ip', rate='20/m'), csrf_exempt], name='dispatch')
 class CartDetailsApiView(APIView):
-    authentication_classes = [TokenAuthentication]
 
     def get(self, request, cart_id):
         if request.user.is_authenticated:
@@ -116,7 +113,6 @@ class CartDetailsApiView(APIView):
 # this api for add food to cart
 @method_decorator([ratelimit(key='ip', rate='10/m'), csrf_exempt], name='dispatch')
 class CartAddApiView(APIView):
-    authentication_classes = [TokenAuthentication]
 
     def post(self, request, food_id):
         if request.user.is_authenticated:

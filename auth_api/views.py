@@ -7,8 +7,7 @@ from .models import UserModel
 from .serializers import LoginSerializer, SingupSerializer, ProfileSerializer, ChangePasswordSerializer, CustomProfileSerializer
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
-from rest_framework.authentication import TokenAuthentication
-
+from .permissions import IsOwnerOrReadonly
 
 # create login api and set limit 10 request every minute.
 @method_decorator(ratelimit(key='ip', rate='10/m'), name='dispatch')
@@ -86,6 +85,8 @@ class ChangePassword(APIView):
 # create custom profile api and set limit 10 request every minute
 @method_decorator(ratelimit(key='ip', rate='10/m'), name='dispatch')
 class CustomProfileApiView(APIView):  # TODO: test full this api
+    permission_classes = [IsOwnerOrReadonly]
+
     def put(self, request):
         if request.user.is_authenticated:
             user = UserModel.objects.filter(id=request.user.id).first()
