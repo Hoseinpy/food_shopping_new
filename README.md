@@ -21,34 +21,18 @@
 
 ## TODO
 
-[x] login-api
-
-[x] singup-api
-
-[x] logout-api
-
-[ ] rest-password-api
-
-
-[x] food-list-api
-
-[x] category-list-api
-
-[x] food-details-api
-
-[x] category-details-api
-
-
-[x] profile-api
-
-[x] change-password-api
-
-[x] custom-profile-api
-
-
-[x] Carts-api
-
-[ ] buy-api
-
-
-[ ] fix cart update bug
+- [x] login-api
+- [x] singup-api
+- [x] logout-api
+- [x] rest-password-api  # i create rest_password but is very basic
+- [x] food-list-api
+- [x] category-list-api
+- [x] food-details-api
+- [x] category-details-api
+- [x] profile-api
+- [x] change-password-api
+- [x] custom-profile-api
+- [x] Carts-api
+- [ ] buy-api
+- [ ] fix cart update bug
+- [ ] create better rest_password api

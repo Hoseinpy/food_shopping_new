@@ -4,10 +4,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
 from .models import UserModel
-from .serializers import LoginSerializer, SingupSerializer, ProfileSerializer, ChangePasswordSerializer, CustomProfileSerializer
+from .serializers import( LoginSerializer, SingupSerializer, ProfileSerializer,
+ChangePasswordSerializer, CustomProfileSerializer, RestPasswordSerializer)
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 from .permissions import IsOwnerOrReadonly
+
 
 # create login api and set limit 10 request every minute.
 @method_decorator(ratelimit(key='ip', rate='10/m'), name='dispatch')
@@ -34,7 +36,9 @@ class SingupApiView(APIView):
         if serializer.is_valid():
             # get username value and save in database
             username = serializer.data.get('username')
-            user = UserModel.objects.create(username=username)
+            secret = serializer.data.get('secret')
+            answer = serializer.data.get('answer')
+            user = UserModel.objects.create(username=username, secret=secret, answer=answer)
             user.set_password(serializer.data.get('password'))
             user.save()
             return Response({'status': 'singup successful'}, status.HTTP_201_CREATED)
@@ -42,16 +46,14 @@ class SingupApiView(APIView):
             return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
         
 
-# create logout api and set limit 2 request every minute
-@method_decorator(ratelimit(key='ip', rate='2/m'), name='dispatch')
+# create logout api and set limit 5 request every minute
+@method_decorator(ratelimit(key='ip', rate='5/m'), name='dispatch')
 class LogoutApiView(APIView):
     def get(self, request):
         logout(request)
         return Response({'status': 'logout successful'}, status.HTTP_200_OK)
     
 
-# create profile api and set limit 20 request every minute
-@method_decorator(ratelimit(key='ip', rate='20/m'), name='dispatch')
 class ProfileApiView(APIView):
     def get(self, request):
         if request.user.is_authenticated:
@@ -73,6 +75,7 @@ class ChangePassword(APIView):
                 if user.check_password(serializer.data.get('current_password')):
                     user.set_password(serializer.data.get('password'))
                     user.save()
+                    logout(request) # new
                     return Response({'status': 'successful'}, status.HTTP_200_OK)
                 else:
                     return Response({'status': 'current_password is worng'}, status.HTTP_404_NOT_FOUND)
@@ -82,8 +85,6 @@ class ChangePassword(APIView):
             return Response({'status': 'you are not login'}, status.HTTP_401_UNAUTHORIZED)
 
 
-# create custom profile api and set limit 10 request every minute
-@method_decorator(ratelimit(key='ip', rate='10/m'), name='dispatch')
 class CustomProfileApiView(APIView):  # TODO: test full this api
     permission_classes = [IsOwnerOrReadonly]
 
@@ -98,3 +99,23 @@ class CustomProfileApiView(APIView):  # TODO: test full this api
                 return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)
         else:
             return Response({'status': 'you are not login'}, status.HTTP_401_UNAUTHORIZED)
+
+
+
+@method_decorator(ratelimit(key='ip', rate='5/m'), name='dispatch')
+class RestPassword(APIView):
+    def post(self, request):
+        serializer = RestPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            secret = serializer.data.get('secret')
+            answer = serializer.data.get('answer')
+            user = UserModel.objects.filter(secret=secret, answer=answer).first()
+            if user:
+                password = serializer.data.get('password')
+                user.set_password(password)
+                user.save()
+                return Response({'status': 'rest password is successful'}, status.HTTP_200_OK)
+            else:
+                return Response({'status': 'secret or answer is not currect'}, status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(serializer.errors, status.HTTP_400_BAD_REQUEST)

@@ -86,12 +86,12 @@ WSGI_APPLICATION = 'testmeshe.wsgi.application'
 AUTH_USER_MODEL = 'auth_api.UserModel'
 
 # this is sqlite3 db if you need! 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 # this is mysql db
 DATABASES = {

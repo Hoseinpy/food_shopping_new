@@ -10,8 +10,6 @@ from django.views.decorators.csrf import csrf_exempt
 from utils.total_price import total_price
 
 
-# this api show all food in database.
-@method_decorator([ratelimit(key='ip', rate='500/m'), csrf_exempt], name='dispatch')
 class FoodApiView(APIView):
     def get(self, request):
         if request.user.is_authenticated:
@@ -22,8 +20,6 @@ class FoodApiView(APIView):
             return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)
 
 
-# this api show food details
-@method_decorator(ratelimit(key='ip', rate='100/m'), name='dispatch')
 class FoodDetailsApiView(APIView):
     def get(self, request, food_id):
         if request.user.is_authenticated:
@@ -35,7 +31,6 @@ class FoodDetailsApiView(APIView):
 
 
 # this api show all category food in database
-@method_decorator(ratelimit(key='ip', rate='100/m'), name='dispatch')
 class FoodCategoryApiView(APIView):
     def get(self, request):
         if request.user.is_authenticated:
@@ -46,8 +41,6 @@ class FoodCategoryApiView(APIView):
             return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)
 
 
-# this api show all food from one category
-@method_decorator(ratelimit(key='ip', rate='100/m'), name='dispatch')
 class FoodCategoryDetailsApiView(APIView):
     def get(self, request, cat_id):
         if request.user.is_authenticated:
@@ -71,7 +64,6 @@ class CartListApiView(APIView):
 
 
 # this api show detail and can delete and update cart
-@method_decorator([ratelimit(key='ip', rate='20/m'), csrf_exempt], name='dispatch')
 class CartDetailsApiView(APIView):
 
     def get(self, request, cart_id):
@@ -111,7 +103,6 @@ class CartDetailsApiView(APIView):
 
 
 # this api for add food to cart
-@method_decorator([ratelimit(key='ip', rate='10/m'), csrf_exempt], name='dispatch')
 class CartAddApiView(APIView):
 
     def post(self, request, food_id):
