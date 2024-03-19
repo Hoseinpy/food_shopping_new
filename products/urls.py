@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     FoodApiView, FoodCategoryApiView, FoodDetailsApiView, FoodCategoryDetailsApiView,
-    CartListApiView, CartDetailsApiView, CartAddApiView,
+    CartListApiView, CartDetailsApiView, CartAddApiView, send_request, verify
 )
 
 urlpatterns = [
@@ -12,6 +12,10 @@ urlpatterns = [
     path('v1/cart/', CartListApiView.as_view(), name='cart-list-api'),
     path('v1/cart/<int:cart_id>', CartDetailsApiView.as_view(), name='cart-detail-api'),
     path('v1/food/add/<int:food_id>', CartAddApiView.as_view(), name='cart-add-api'),
+
+    # payment
+    path('payment/request/', send_request, name='request'),
+    path('payment/verify/', verify , name='verify'),
 ]
 
 

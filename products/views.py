@@ -8,7 +8,9 @@ from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from utils.total_price import total_price
-
+import requests
+import json
+from testmeshe.config_setting import MERCHANT, SANDBOX
 
 class FoodApiView(APIView):
     def get(self, request):
@@ -125,4 +127,72 @@ class CartAddApiView(APIView):
                 return Response({'status': 'cart succecful created'}, status.HTTP_201_CREATED)
         else:
             return Response({'status': 'UNAUTHORIZED'}, status.HTTP_401_UNAUTHORIZED)
+     
 
+
+# sandbox merchant 
+if SANDBOX:
+    sandbox = 'sandbox'
+else:
+    sandbox = 'www'
+
+# zarinpal api
+ZP_API_REQUEST = f"https://{sandbox}.zarinpal.com/pg/rest/WebGate/PaymentRequest.json"
+ZP_API_VERIFY = f"https://{sandbox}.zarinpal.com/pg/rest/WebGate/PaymentVerification.json"
+ZP_API_STARTPAY = f"https://{sandbox}.zarinpal.com/pg/StartPay/"
+
+
+amount = 10000  # Rial / Required
+description = "توضیحات مربوط به تراکنش را در این قسمت وارد کنید"  # Required
+
+# Important: need to edit for realy server.
+CallbackURL = 'http://127.0.0.1:8000/payment/verify/'
+
+
+def send_request(request):
+    data = {
+        "MerchantID": MERCHANT,
+        "Amount": amount,
+        "Description": description,
+        "CallbackURL": CallbackURL,
+    }
+    
+    data = json.dumps(data)
+    
+    # set content length by data
+    headers = {'content-type': 'application/json', 'content-length': str(len(data)) }
+    try:
+        response = requests.post(ZP_API_REQUEST, data=data,headers=headers, timeout=10)
+
+        if response.status_code == 200:
+            response = response.json()
+            if response['Status'] == 100:
+                return {'status': True, 'url': ZP_API_STARTPAY + str(response['Authority']), 'authority': response['Authority']}
+            else:
+                return {'status': False, 'code': str(response['Status'])}
+        return response
+    
+    except requests.exceptions.Timeout:
+        return {'status': False, 'code': 'timeout'}
+    except requests.exceptions.ConnectionError:
+        return {'status': False, 'code': 'connection error'}
+
+
+def verify(authority):
+    data = {
+        "MerchantID": settings.MERCHANT,
+        "Amount": amount,
+        "Authority": authority,
+    }
+    data = json.dumps(data)
+    # set content length by data
+    headers = {'content-type': 'application/json', 'content-length': str(len(data)) }
+    response = requests.post(ZP_API_VERIFY, data=data,headers=headers)
+
+    if response.status_code == 200:
+        response = response.json()
+        if response['Status'] == 100:
+            return {'status': True, 'RefID': response['RefID']}
+        else:
+            return {'status': False, 'code': str(response['Status'])}
+    return response
